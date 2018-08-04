@@ -17,13 +17,12 @@
     - 'yum-utils'
     - 'device-mapper-persistent-data'
     - 'lvm2'
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: install epel-release
   yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=latest
 
 - name: install python-pip
-  package: name=python-pip state=latest
+  yum: name=python-pip state=latest
 
 - name: install docker-py
   pip: name=docker-py state=latest
