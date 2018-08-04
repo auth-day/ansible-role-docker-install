@@ -1,0 +1,42 @@
+- name: remove all docker if exists
+  yum: name="{{ item }}" state=absent
+  with_items: 
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-engine-selinux
+    - docker-engine
+
+- name: install dependencies
+  yum: name="{{ item }}" state=latest 
+  with_items: 
+    - 'yum-utils'
+    - 'device-mapper-persistent-data'
+    - 'lvm2'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install epel-release
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=latest
+
+- name: install python-pip
+  package: name=python-pip state=latest
+
+- name: install docker-py
+  pip: name=docker-py state=latest
+
+- name: add docker GPG key
+  rpm_key: key=https://download.docker.com/linux/centos/gpg state=present
+
+- name: add docker-ce.repo
+  get_url: url="{{ docker_yum_repo_url }}" dest=/etc/yum.repos.d/docker-"{{ docker_edition }}".repo owner=root group=root mode=0644
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install docker-ce
+  yum: name=docker-ce state=latest
+
+- name: start and enable docker service
+  service: name=docker state=restarted enabled=yes
