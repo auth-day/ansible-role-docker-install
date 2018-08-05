@@ -1,6 +1,6 @@
 ---
 - include_tasks: redhat-install.yml
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat'
 
 - include_tasks: debian-install.yml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -9,4 +9,5 @@
   package:
     name: "{{ docker_package }}"
     state: latest
+  when: ansible_distribution != 'CentOS' or ansible_distribution != 'Red Hat Enterprise Linux' or ansible_distribution != 'RedHat'
   notify: restart docker
